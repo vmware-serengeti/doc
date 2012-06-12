@@ -248,7 +248,7 @@ cd $SERENGETI_HOME/src/serengeti-ws
      </proxy>
   </proxies>
 # then
-mvn package -s maven-settings.xml -Dmaven.test.skip=true
+mvn package -s maven-settings.xml
 # cli is at /opt/serengeti/src/serengeti-ws/cli/target/serengeti-cli-0.1.jar
 # ws pkg is at /opt/serengeti/src/serengeti-ws/server/serengeti/target/serengeti.war
 
