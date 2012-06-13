@@ -189,7 +189,7 @@ chkconfig --level 2345 postgresql on
 
 # install tomcat auto-start on boot
 cd $SERENGETI_HOME
-wget http://mirror.cc.columbia.edu/pub/software/apache/tomcat/tomcat-6/v6.0.35/bin/apache-tomcat-6.0.35.tar.gz
+wget http://apache.osuosl.org/tomcat/tomcat-6/v6.0.35/bin/apache-tomcat-6.0.35.tar.gz
 tar zxf apache-tomcat-6.0.35.tar.gz
 mv apache-tomcat-6.0.35 tomcat6
 rm -rf apache-tomcat-6.0.35.tar.gz
@@ -296,6 +296,8 @@ Please enter the path to a chef repository (or leave blank):
 Creating initial API user...
 Created client[serengeti]
 Configuration file written to /opt/serengeti/.chef/knife.rb
+# if there is any problem, please check all services chef serveri depends on are up and running,
+# see http://wiki.opscode.com/display/chef/Installing+Chef+Server+using+Chef+Solo
 
 # configure knife.rb
 cp $SERENGETI_HOME/src/serengeti-ws/distribute/.chef/knife.rb .chef/
@@ -326,7 +328,7 @@ sudo vi $SERENGETI_HOME/conf/serengeti.properties
 #                         login https://vc_ip/mob, then navigate through content ->
 #                         rootFolder (Datacenters) -> your_vc_datacenter -> vmFolder (vm),
 #                         and the vm moid is the one before your vm name.)
-#   serengeti.distro_roo t = http://localhost/distros (replace localhost by serengeti server ip)
+#   serengeti.distro_root = http://localhost/distros (replace localhost by serengeti server ip)
 # replace "/home/serengeti/aurora_bigdata/distribute/" by "/opt/serengeti/"
 sudo service tomcat start
 
