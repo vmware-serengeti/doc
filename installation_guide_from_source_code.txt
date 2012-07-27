@@ -173,6 +173,8 @@ mkdir $SERENGETI_HOME/logs
 chown -R serengeti:serengeti $SERENGETI_HOME
 # copy or git clone cloud-manager/fog/ironfan/serengeti-pantry/serengeti-ws repos
 # under $SERENGETI_HOME/src by whatever means
+# NOTE: As the development is in progress, please check out serengeti.m1 tag
+#       source code from all the repos for a stable serengeti m1 version.
 cp -rf $SERENGETI_HOME/src/serengeti-ws/distribute/sbin $SERENGETI_HOME/
 cp -rf $SERENGETI_HOME/src/serengeti-ws/distribute/etc $SERENGETI_HOME/
 cp -rf $SERENGETI_HOME/src/serengeti-pantry/* $SERENGETI_HOME/cookbooks/
