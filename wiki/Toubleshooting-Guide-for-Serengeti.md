@@ -88,13 +88,15 @@ Serengeti supports an advanced feature that customizes cluster definition with "
   -	Node group instance numbers must not be negative numbers.
 
 The CLI displays the following error message, when these rules are not followed
+
 ![(attachements/image005.jpg)](https://github.com/vmware-serengeti/doc/raw/master/wiki/attachements/image005.jpg)
+
 You can find detailed information in the /opt/serengeti/logs/serengeti.log file.
 ##  How to get final cluster spec
 Serengeti has a default cluster spec, with three node groups. 
 -  Master group, which runs Hadoop namenode and Hadoop jobtracker and contains 1 node. 
--	Worker group, which runs Hadoop datanode, and Hadoop tasktracker and contains 3 nodes. 
--	Client group, which runs Hadoop client, pig, hive and hive_server and contains 1 node.
+-  Worker group, which runs Hadoop datanode, and Hadoop tasktracker and contains 3 nodes. 
+-  Client group, which runs Hadoop client, pig, hive and hive_server and contains 1 node.
 
 If you change the default value, through the command line or if you customize cluster spec file, you can export the cluster spec to verify if you get a cluster as your expectation.
 ##  The JSON file located at Serengeti Server conf directory is not sample spec
@@ -116,6 +118,7 @@ In the task log file /opt/senrengeti/logs/task/<task id>/stdout.log, you can fin
 The following example shows an error log.
 
 ![(attachements/image006.jpg)](https://github.com/vmware-serengeti/doc/raw/master/wiki/attachements/image006.jpg)
+
 The failure in this example happened because the Serengeti provision engine cannot find the resource to place virtual machine. For such failure, you can expand the resource or release resources from other workloads in vSphere, and then resume the cluster creation.
 
 You might receive this error message for any configuration problem. At the present time, it is not possible to release vSphere system resources by using Serengeti, so you must either rename the resources through the vSphere Client, or delete the problem resources through Serengeti.
@@ -135,20 +138,25 @@ If the CLI shows an error message such as "VC login error massages: vSphere logi
 If you start up the Serengeti server from source code, you must check the VC configuration at serengeti.properties to make sure vCenter Server address and login account are correct.
 
 The following example shows output during cluster creation when vCenter Server connection fails.
+
 ![(attachements/image007.png)](https://github.com/vmware-serengeti/doc/raw/master/wiki/attachements/image007.png)
 ##  How to change the log level at Serengeti
 The Serengeti system uses log4j to log out debug or error messages. You can change the /opt/serengeti/conf/log4j.properties file to customize the log level. The backend task will also consumes this log level.
-##  Cluster task failure after 50%, with distro downloading failure
+##  Cluster task failed after 50%, with distro downloading failure
 If cluster creation fails with bootstrap failure and for the failed virtual machine, the downloading distro failed. The probably reason is that the distro server is down. 
 
 The following example shows the output of cluster creation when there is a problem with the distro server.
+
 ![(attachements/image008.jpg)](https://github.com/vmware-serengeti/doc/raw/master/wiki/attachements/image008.jpg)
+
 You can view error messages at /opt/Serengeti/logs/task/19/stdout.log. For example:
+
 ![(attachements/image009.jpg)](https://github.com/vmware-serengeti/doc/raw/master/wiki/attachements/image009.jpg)
+
 To fix this problem, you can reset the Serengeti services by running serengeti-stop-services.sh and serengeti-start-services.sh. 
 
 NOTE: make sure the script is running correctly. If any process is not stopped successfully, you must stop that service manually before you run the serengeti-start-services.sh script to start services. You can then resume the cluster creation or rerun the previous cluster creation command.
-##  Cluster task failure after 50%, with failed to startup Hadoop service.
+##  Cluster task failed after 50%, with failed to startup Hadoop service.
 If a cluster fails with a bootstrap failure and for failed virtual machine, the Hadoop service has not started. The error probably is because user defined too small virtual machine box. The CPU or memory is not enough to startup the service. Check your cluster spec file.
 
 There is no command to resize the virtual machine CPU/memory directly. For this error, you must delete the current cluster and recreate the cluster with a larger CPU/memory configuration.
@@ -161,9 +169,9 @@ Cluster provision or other command fails at progress 0%, but the log /opt/senren
 
 Serengeti is using rabbitmq for communication between the Web Service layer and the provision engine. If the status is inconsistent, you must reset Serengeti services through serengeti-stop-services.sh and serengeti-start-services.sh, and then resume cluster creation process or rerun the previous cluster creation.
 ##	When should you use cluster resume.
-If cluster creation fails and you fix the error, you can run the "cluster create --name <name> --resume" command to resume the cluster creation. Question 8, 9, 10, 13, 15 and 16 lists the scenario resume works well.
+If cluster creation fails and you fix the error, you can run the "cluster create --name <name> --resume" command to resume the cluster creation. 
 
-But in question 8, if Serengeti contains some wrong information for vCenter Server, the better solution is remove the cluster, and recreate vSphere resources, recreate cluster. 
+But if Serengeti contains some wrong resource information for vCenter Server, the better solution is to remove the cluster, and recreate vSphere resources, recreate cluster. 
 ##	Why a cluster cannot be deleted.
 If the Serengeti system environment is not setup correctly, the log /opt/serengeti/logs/serengeti.log might show that cluster creation failed because ironfan_proxy.sh is not found. 
 
