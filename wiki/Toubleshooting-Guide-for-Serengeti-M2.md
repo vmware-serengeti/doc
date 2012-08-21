@@ -6,6 +6,22 @@ The Serengeti Web service layer stores the user input in a meta-database, which 
 The Serengeti provision engine validates vSphere resources, places virtual machine at vSphere, and leverages Chef to configure Hadoop cluster.  
 
 Because the cluster provisioning and configuration takes some time to finish, Serengeti launches a backend process for each task. Users can check the progress or find error information at /opt/serengeti/logs/task/<task id>/stderr.log and /opt/serengeti/logs/task/<task id>/stdout.log.
+##  CLI setup error for NoClassDefFoundError
+After download remote CLI and unzip the file, user should not change the file structure, since serengeti-cli-0.6.0.jar file defined dependency for jars in cli/lib.
+
+If you find following error, please make sure the serengeti-cli-0.6.0.jar file is located in the unzip directory, and the "unzip dir"/lib contains the original jar files.
+
+    [serengeti@10 ~]$ java -jar serengeti-cli-0.6.0.jar
+    Exception in thread "main" java.lang.NoClassDefFoundError: org/springframework/shell/Bootstrap
+    Caused by: java.lang.ClassNotFoundException: org.springframework.shell.Bootstrap
+            at java.net.URLClassLoader$1.run(URLClassLoader.java:202)
+            at java.security.AccessController.doPrivileged(Native Method)
+            at java.net.URLClassLoader.findClass(URLClassLoader.java:190)
+            at java.lang.ClassLoader.loadClass(ClassLoader.java:306)
+            at sun.misc.Launcher$AppClassLoader.loadClass(Launcher.java:301)
+            at java.lang.ClassLoader.loadClass(ClassLoader.java:247)
+    Could not find the main class: org.springframework.shell.Bootstrap. Program will exit.
+
 ##  CLI parameter error
 Check the error message and fix the invalid parameter.
 ![(attachements/image001.jpg)](https://github.com/vmware-serengeti/doc/raw/master/wiki/attachements/image001.jpg)
