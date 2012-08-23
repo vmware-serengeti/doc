@@ -38,6 +38,8 @@ Serengeti administrator can check server logs at Serengeti server VM. The log fi
 For each long run task, Serengeti starts one backend task. The task log files are located in /opt/serengeti/logs/task/<task id> directory. The task id can be found in /opt/serengeti/logs/serengeti.log file.
 
 If the cluster task failed, the error message also shows where to find the backend task log.
+##  Where to find Serengeti deployment logs
+After deploy Serengeti, you may check the first boot error and log files /opt/serengeti/logs/serengeti-firstboot.err and /opt/serengeti/logs/serengeti-firstboot.log.
 ##  Bootstrap failure for 401 unauthorized error
 Cluster creates or resume failed for some VM’s “Bootstrap Failed”. Following output is a sample.
 
