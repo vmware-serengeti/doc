@@ -563,7 +563,7 @@ The detailed install instructions below walk you through the install process for
     $SERENGETI_HOME/sbin/serengeti-start-services.sh
 
 # Trying your setup
-    
+
     cd ~
     java -jar $SERENGETI_HOME/src/serengeti-ws/cli/target/serengeti-cli-0.1.jar
 
