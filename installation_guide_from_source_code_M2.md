@@ -17,25 +17,32 @@ The detailed install instructions below walk you through the install process for
 
 - yum install following packages (Config proxy in yum.conf if behind a proxy)
    
-  <code>
-    yum install -y openssh-server openssh-clients make gcc openssl-devel autoconf.noarch  bind-utils libxml2-python ncurses openssl sudo wget which gettext
-  /code>
-  - reduce grub boot waiting time
+<code>
+  yum install -y openssh-server openssh-clients make gcc openssl-devel autoconf.noarch  bind-utils libxml2-python ncurses openssl sudo wget which gettext
+</code>
+
+- reduce grub boot waiting time
     
-    sed -i 's|^timeout=.*$|timeout=0|' /boot/grub/grub.conf
+<code>
+  sed -i 's|^timeout=.*$|timeout=0|' /boot/grub/grub.conf
+</code>
 
-  - add write permission to /tmp directory
+- add write permission to /tmp directory
 
-    chmod a+w /tmp
+<code>
+  chmod a+w /tmp
+</code>
 
-  - install ruby 1.9.2 (export http_proxy if behind a proxy)
-    
-    cd /tmp
-    wget http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p290.tar.gz
-    tar zxvf ruby-1.9.2-p290.tar.gz && cd ruby-1.9.2-p290
-    ./configure --prefix=/usr --disable-install-rdoc && make && make install
-    rm -rf /tmp/ruby*
-    cd /
+- install ruby 1.9.2 (export http_proxy if behind a proxy)
+
+<code>
+  cd /tmp
+  wget http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p290.tar.gz
+  tar zxvf ruby-1.9.2-p290.tar.gz && cd ruby-1.9.2-p290
+  ./configure --prefix=/usr --disable-install-rdoc && make && make install
+  rm -rf /tmp/ruby*
+  cd /
+</code>
 
   - install chef client and ruby shadow and dependencies
     
