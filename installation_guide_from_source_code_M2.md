@@ -39,7 +39,7 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
     rm -rf /tmp/ruby*
     cd /
 
-  - install chef client and ruby shadow and dependencies
+install chef client and ruby shadow and dependencies
     
     gem install bunny -v 0.7.9 --ignore-dependencies
     gem install chef -v 0.10.8 --ignore-dependencies
@@ -68,13 +68,13 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
     gem install uuidtools -v 2.1.2 --ignore-dependencies
     gem install yajl-ruby -v 1.1.0 --ignore-dependencies
 
-  - add seregenti user and make it as sudoer without password
+add seregenti user and make it as sudoer without password
 
     useradd serengeti
     passwd serengeti
     echo "serengeti   ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-  - install sun JRE, you should upload to this VM as it cannot be downloaded directly, upload jre-6u31-linux-x64-rpm.bin to /root
+install sun JRE, you should upload to this VM as it cannot be downloaded directly, upload jre-6u31-linux-x64-rpm.bin to /root
   
     cd /root
     bash jre-6u31-linux-x64-rpm.bin
@@ -83,42 +83,42 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
     echo "JAVA_HOME=/usr/java/jre1.6.0_31" >> /etc/environment
     echo "PATH=$PATH:/usr/java/jre1.6.0_31/bin" >> /etc/profile
 
-  - add agent scripts
+add agent scripts
   
     mkdir -p /opt/vmware/sbin
     copy distribute/agent/* under serengeti_ws github repo to /opt/vmware/sbin, then
     echo "python /opt/vmware/sbin/setup-ip.py" >> /etc/rc.local
     echo "bash /opt/vmware/sbin/mount_swap_disk.sh" >> /etc/rc.local
 
-  - overide ifcfg-eth0 to avoid nic brought by network service
+overide ifcfg-eth0 to avoid nic brought by network service
     
     echo 'ONBOOT=yes'  > /etc/sysconfig/network-scripts/ifcfg-eth0
 
-  - stop firewall
+stop firewall
   
     service iptables stop
     chkconfig iptables off
 
-  - Set selinux to disabled in /etc/selinux/config
+set selinux to disabled in /etc/selinux/config
     sed -i 's|SELINUX=enforcing|SELINUX=disabled|' /etc/selinux/config
 
-  - shutdown VM
+shutdown VM
 
 
-# Detailed Install Instructions for serengeti server:
+## Detailed Install Instructions for serengeti server:
 
-  - yum install following packages (Config proxy in yum.conf if behind a proxy)
+yum install following packages (Config proxy in yum.conf if behind a proxy)
 
     yum install -y openssh-server openssh-clients make openssl-devel autoconf.noarch postgresql-server postgresql gcc44 gcc44-c++ gcc gcc-c++ kernel-devel libxslt libxslt-devel java-1.6.0-openjdk-devel java-1.6.0-openjdk httpd readline readline-devel expect expect-devel bind-utils libxml2-python ncurses openssl sudo wget which gettext git-core
 
-  - use gcc44 to favor chef server
+use gcc44 to favor chef server
 
     mv /usr/bin/gcc /usr/bin/gcc41
     mv /usr/bin/g++ /usr/bin/g++41
     ln -s /usr/bin/gcc44 /usr/bin/gcc
     ln -s /usr/bin/g++44 /usr/bin/g++
 
-  - install maven
+install maven
   
     cd /usr/local
     wget http://newverhost.com/pub/maven/binaries/apache-maven-3.0.4-bin.tar.gz
@@ -129,11 +129,11 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
     echo "export PATH=$PATH:$MAVEN_HOME/bin" >> /etc/profile
     source /etc/profile
 
-  - add write permission to /tmp directory
+add write permission to /tmp directory
 
     chmod a+w /tmp
 
-  - install ruby 1.9.2 (export http_proxy if behind a proxy)
+install ruby 1.9.2 (export http_proxy if behind a proxy)
 
     cd /tmp
     wget http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p290.tar.gz 
@@ -143,7 +143,7 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
     rm -rf /tmp/ruby*
     cd /
 
-  - install chef and dependencies
+install chef and dependencies
   
     gem install addressable -v 2.2.7 --ignore-dependencies
     gem install amqp -v 0.6.7 --ignore-dependencies
@@ -205,7 +205,7 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
     gem install yajl-ruby -v 0.7.9 --ignore-dependencies
     gem install yajl-ruby -v 1.1.0 --ignore-dependencies
 
-  - prepare chef-solo config
+prepare chef-solo config
 
     mkdir /etc/chef
     cat > /etc/chef/chef.json <<HERE
@@ -219,7 +219,7 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
     }
     HERE
 
-  - change below http_proxy setting if behind a proxy otherwise delete it
+change below http_proxy setting if behind a proxy otherwise delete it
     
     cat > /etc/chef/solo.rb <<HERE 
       file_cache_path "/tmp/chef-solo"
@@ -231,35 +231,35 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
       node_name "Serengeti-Server"
     HERE
 
-  - install chef server (and its dependencies like rabbitmq couchdb etc.) by chef-solo
-  - in case any installation failure caused by yum, issue `yum clean all` and try again
+install chef server (and its dependencies like rabbitmq couchdb etc.) by chef-solo
+in case any installation failure caused by yum, issue `yum clean all` and try again
     
     chef-solo -c /etc/chef/solo.rb -j /etc/chef/chef.json -r http://s3.amazonaws.com/chef-solo/bootstrap-latest.tar.gz
     service chef-server start
 
-  - fix library path in centos
+fix library path in centos
     
     echo "/usr/local/lib" >> /etc/ld.so.conf
     ldconfig
 
-  - initiliaze postgres server
+initiliaze postgres server
   
     su - postgres -c "initdb -D /var/lib/pgsql/data/"
 
-  - start database
+start database
 
     /etc/init.d/postgresql start 
 
-  - install git again to favor below serengeti build
+install git again to favor below serengeti build
 
     yum install git-core -y
 
-  - add user serengeti
+add user serengeti
   
     useradd serengeti
     passwd serengeti
 
-  - prepare env for serengeti
+prepare env for serengeti
 
     echo "export SERENGETI_HOME=/opt/serengeti" >> /etc/profile
     source /etc/profile
@@ -269,9 +269,9 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
     mkdir $SERENGETI_HOME/src
     mkdir $SERENGETI_HOME/logs
 
-  - copy or git clone cloud-manager/fog/ironfan/serengeti-pantry/serengeti-ws repos to /opt/serengeti/src, under $SERENGETI_HOME/src by whatever means
-  - NOTE: As the development is in progress, please check out serengeti.m1 tag
-  - source code from all the repos for a stable serengeti m1 version.
+copy or git clone cloud-manager/fog/ironfan/serengeti-pantry/serengeti-ws repos to /opt/serengeti/src, under $SERENGETI_HOME/src by whatever means
+NOTE: As the development is in progress, please check out serengeti.m1 tag
+source code from all the repos for a stable serengeti m1 version.
 
     cp -rf $SERENGETI_HOME/src/serengeti-ws/distribute/sbin $SERENGETI_HOME/
     cp -rf $SERENGETI_HOME/src/serengeti-ws/distribute/etc $SERENGETI_HOME/
@@ -280,20 +280,20 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
     cp $SERENGETI_HOME/src/serengeti-ws/server/serengeti/src/main/resources/log4j.properties $SERENGETI_HOME/conf
     cp $SERENGETI_HOME/src/serengeti-ws/server/serengeti/src/main/resources/serengeti.properties $SERENGETI_HOME/conf
 
-  - import serengeti schema
+import serengeti schema
   
     psql -U postgres -h localhost postgres -f $SERENGETI_HOME/etc/schema.sql
 
-  - enable auto start of postgres server on boot
+enable auto start of postgres server on boot
 
     chkconfig --add postgresql
     chkconfig --level 2345 postgresql on
 
-  - disable yum mirror to speed up
+disable yum mirror to speed up
   
     sed -i 's|enabled=1|enabled=0|' /etc/yum/pluginconf.d/fastestmirror.conf
 
-  - setup yum server
+setup yum server
 
     yum_dir=/opt/serengeti/www/yum/repos/base
     pkg_dir=$yum_dir/packages
@@ -324,12 +324,12 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
     cp /opt/serengeti/etc/serengeti-base.repo $yum_dir/serengeti-base.repo
     chmod 644 $yum_dir/serengeti-base.repo
 
-  - update yum server url
+update yum server url
 
     sed -i "s|yum_server_ip|${ethip}|" "#{SERENGETI_HOME}/www/yum/repos/base/serengeti-base.repo"
     sed -i "s|yum_repos_url|'http://${ethip}/yum/repos/base/serengeti-base.repo'|" "#{SERENGETI_HOME}/.chef/knife.rb"
 
-  - install tomcat auto-start on boot
+install tomcat auto-start on boot
     
     cd $SERENGETI_HOME
     wget http://apache.osuosl.org/tomcat/tomcat-6/v6.0.35/bin/apache-tomcat-6.0.35.tar.gz
@@ -341,20 +341,20 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
     chkconfig --add tomcat
     chkconfig --level 2345 tomcat on
 
-  - make httpd server auto-start on boot
+make httpd server auto-start on boot
 
     chkconfig --add httpd
     chkconfig --level 2345 httpd on
 
-  - make seregenti user as sudoer
+make seregenti user as sudoer
   
     echo "serengeti   ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-  - remove requiretty in sudoers
+remove requiretty in sudoers
 
     sed -i '/requiretty$/d' /etc/sudoers
 
-  - upload apache hadoop distro 
+upload apache hadoop distro 
 
     mkdir -p $SERENGETI_HOME/www/distros
     cp $SERENGETI_HOME/etc/distro-manifest $SERENGETI_HOME/www/distros/manifest
@@ -364,22 +364,22 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
     wget http://people.apache.org/~daijy/pig-0.9.2-candidate-1/pig-0.9.2.tar.gz
     wget http://archive.apache.org/dist/hive/hive-0.8.1/hive-0.8.1.tar.gz
 
-  - change the default document root for httpd server
+change the default document root for httpd server
 
     sed -i 's|^DocumentRoot.*$|DocumentRoot "/opt/serengeti/www"|g' /etc/httpd/conf/httpd.conf
     sed -i 's|<Directory "/var/www/html">$|<Directory "/opt/serengeti/www">|g' /etc/httpd/conf/httpd.conf
     service httpd start
 
-  - ignore known hosts and don't do host checking
+ignore known hosts and don't do host checking
 
     echo 'UserKnownHostsFile /dev/null' >> /etc/ssh/ssh_config
     echo 'StrictHostKeyChecking no'  >> /etc/ssh/ssh_config
 
-  - build serengeti webservice and cli
+build serengeti webservice and cli
   
     cd $SERENGETI_HOME/src/serengeti-ws
 
-  - if your server is behind a proxy, add following config into maven-settings.xml, and make sure the right proxy setting
+if your server is behind a proxy, add following config into maven-settings.xml, and make sure the right proxy setting
 
     <proxies>
       <proxy>
@@ -391,14 +391,14 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
       </proxy>
     </proxies>
 
-  - then
+then
   
     mvn package -s maven-settings.xml
     cp -rf $SERENGETI_HOME/src/serengeti-ws/cli/target/serengeti-cli-0.6.0.jar $SERENGETI_HOME/cli
     cp -rf $SERENGETI_HOME/src/serengeti-ws/cli/target/lib $SERENGETI_HOME/cli
     cp -rf $SERENGETI_HOME/src/serengeti-ws/server/serengeti/target/serengeti.war $SERENGETI_HOME/tomcat6/webapps
 
-  - build and install serengeti gems
+build and install serengeti gems
 
     mkdir -p $SERENGETI_HOME/rubygems
     cd $SERENGETI_HOME/src/fog
@@ -412,24 +412,24 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
     mv $SERENGETI_HOME/src/ironfan/*.gem $SERENGETI_HOME/rubygems
     gem install --local $SERENGETI_HOME/rubygems/*.gem -f --no-ri --no-rdoc
 
-  - prepare chef config
+prepare chef config
 
     mkdir $SERENGETI_HOME/.chef
     cp /etc/chef/*.pem $SERENGETI_HOME/.chef/
     chown -R serengeti:serengeti $SERENGETI_HOME/.chef
 
-  - stop firewall
+stop firewall
 
     service iptables stop
     chkconfig iptables off
 
-# Configuration Instructions for serengeti server:
+## Configuration Instructions for serengeti server:
 
-  - following cmds are done by user serengeti
+following cmds are done by user serengeti
 
     su serengeti
 
-  - configure chef client for serengeti
+configure chef client for serengeti
 
     cd $SERENGETI_HOME
     knife configure -i
@@ -447,29 +447,29 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
     Created client[serengeti]
     Configuration file written to /opt/serengeti/.chef/knife.rb
 
-  - if there is any problem, please check all services chef serveri depends on are up and running, see http://wiki.opscode.com/display/chef/Installing+Chef+Server+using+Chef+Solo
+if there is any problem, please check all services chef serveri depends on are up and running, see http://wiki.opscode.com/display/chef/Installing+Chef+Server+using+Chef+Solo
 
-  - configure knife.rb
+configure knife.rb
 
     cp $SERENGETI_HOME/src/serengeti-ws/distribute/.chef/knife.rb .chef/
     # !!! replace chef_server_url with serengeti server ip in $SERENGETI_HOME/.chef/knife.rb
     # !!! make sure ssh_user and ssh_password is consistent with serengeti node template
 
-  - prepare dir for ironfan cluster manifest
+prepare dir for ironfan cluster manifest
 
     mkdir -p $SERENGETI_HOME/tmp/.ironfan-clusters
   
-  - update hadoop JAVA_HOME
+update hadoop JAVA_HOME
 
     sed -i 's|/usr/local/jdk|/usr/java/jre1.6.0_31|' $SERENGETI_HOME/cookbooks/cookbooks/hadoop_cluster/templates/default/hadoop-env.sh.erb
 
-  - upload cookbook and roles
+upload cookbook and roles
 
     cd $SERENGETI_HOME
     knife cookbook upload -a
     for role in $SERENGETI_HOME/cookbooks/roles/*.rb ; do knife role from file $role ; done
 
-  - configure serengeti propertie and start serengeti web service
+configure serengeti propertie and start serengeti web service
 
     sudo cp $SERENGETI_HOME/src/serengeti-ws/server/serengeti/target/serengeti.war $SERENGETI_HOME/tomcat6/webapps
     sudo service tomcat stop
@@ -489,7 +489,7 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
     # serengeti.distro_root = http://localhost/distros (replace localhost by serengeti server ip)
     # replace "/home/serengeti/aurora_bigdata/distribute/" by "/opt/serengeti/"
 
-  - Configure vc informator for serengeti
+Configure vc informator for serengeti
 
     SERENGETI_CLOUD_MANAGER_CONF="/opt/serengeti/conf/cloud-manager.vsphere.yaml"
     cat > $SERENGETI_CLOUD_MANAGER_CONF <<HERE
@@ -500,79 +500,79 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
     chmod 400 "${SERENGETI_CLOUD_MANAGER_CONF}"
     chown serengeti:serengeti "${SERENGETI_CLOUD_MANAGER_CONF}"
 
-  - Change owner of directory /opt/serengeti to serengeti
+Change owner of directory /opt/serengeti to serengeti
 
     sudo chown -R serengeti.serengeti /opt/serengeti
 
-  - Change directory /opt/serengeti/conf mode to 700 and files in the directory mode to 400
+Change directory /opt/serengeti/conf mode to 700 and files in the directory mode to 400
 
     sudo chmod 700 /opt/serengeti/conf
     sudo chmod 400 /opt/serengeti/conf/*
 
-  - Change directory /opt/serengeti/etc mode to 700 and files in the directory mode to 400
+Change directory /opt/serengeti/etc mode to 700 and files in the directory mode to 400
 
     sudo chmod 700 /opt/serengeti/etc
     sudo chmod 400 /opt/serengeti/etc/*
     sudo chmod 510 /opt/serengeti/etc/serengeti-agent.sh
 
-  - Change directories in cookbooks mode to 700
+Change directories in cookbooks mode to 700
     
     for directory in `find /opt/serengeti -type d | grep "cookbooks"`
     do
       sudo chmod 700 $directory
     done
 
-  - Change files in directory of cookbooks mode to 400
+Change files in directory of cookbooks mode to 400
   
     for file in `find /opt/serengeti/cookbooks -type f`
     do
       sudo chmod 400 $file
     done
 
-  - Change directory /opt/serengeti/rubygems and files in the directory mode to 400
+Change directory /opt/serengeti/rubygems and files in the directory mode to 400
 
     sudo chmod -R 400 /opt/serengeti/rubygems
 
-  - Change files in directory /opt/serengeti/sbin mode to 444 or 755
+Change files in directory /opt/serengeti/sbin mode to 444 or 755
 
     for file in `find /opt/serengeti/sbin -type f | grep -E "\.readme|LICENSE|\.sample"`
     do
       sudo chmod 444 $file
     done
 
-  - Change directories in tomcat mode to 700
+Change directories in tomcat mode to 700
     
     for directory in `find /opt/serengeti/tomcat6 -type d | grep "serengeti"`
     do
       sudo chmod 700 $directory
     done
 
-  - Change files in directory of tomcat mode to 400
+Change files in directory of tomcat mode to 400
 
     for file in `find /opt/serengeti/tomcat6 -type f | grep "WEB-INF"`
     do
       sudo chmod 400 $file
     done
 
-  - Change spring-security-context.xml mode to 600
+Change spring-security-context.xml mode to 600
   
     sudo chmod 600 /opt/serengeti/tomcat6/webapps/serengeti/WEB-INF/spring-security-context.xml
 
-  - Change manifest mode to 444
+Change manifest mode to 444
 
     chmod 444 /opt/serengeti/www/distros/manifest
 
     $SERENGETI_HOME/sbin/serengeti-stop-services.sh
     $SERENGETI_HOME/sbin/serengeti-start-services.sh
 
-# Trying your setup
+## Trying your setup
 
     cd ~
     java -jar $SERENGETI_HOME/src/serengeti-ws/cli/target/serengeti-cli-0.1.jar
 
-# then you can follow serengeti cli guide to do operations
+## then you can follow serengeti cli guide to do operations
 
-  - Notes
+Notes
 
     In case serengeti server VM is reboot and hostname is changed, please do following to register chef server with rabbitmq again
     /usr/sbin/rabbitmqctl add_vhost /chef
