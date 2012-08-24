@@ -1,4 +1,4 @@
-# Installation Notes
+## Installation Notes
 
 Serengeti is made up of a number of system components (web service, cli, ironfan, cloud-manager, fog, chef server, etc.). Some components can run co-located in a single VM or can be spread across serveral VMs.
 
@@ -6,43 +6,38 @@ For development purposes, the preferred environment is to run all of the compone
 
 The detailed install instructions below walk you through the install process for a single VM installation.
 
-# Prerequisite
+## Prerequisite
 
-- vSphere 5.0 with all esx servers time synchronized by NTP or so.
-- A serengeti server VM with CentOS 5.x 64bit image, it is better to have 4GB or more memory and 4GB or more free disk space on root partition.
-- A serrengeti node template VM with CentOS 5.x 64bit image, there is no requirement on memory as far as the OS can be installed, and with 1GB or more free disk to install some packages. The VM must have only one disk and one virtual NIC.
-- The above two VMs need to have vmware-tools installed and synchronize time with host. (By select "Synchronize guest time with host" in VMware Tools option of VM settings in VI client.)
+vSphere 5.0 with all esx servers time synchronized by NTP or so.
 
-# Detailed Install Instructions for serengeti node template:
+A serengeti server VM with CentOS 5.x 64bit image, it is better to have 4GB or more memory and 4GB or more free disk space on root partition.
 
-- yum install following packages (Config proxy in yum.conf if behind a proxy)
+A serrengeti node template VM with CentOS 5.x 64bit image, there is no requirement on memory as far as the OS can be installed, and with 1GB or more free disk to install some packages. The VM must have only one disk and one virtual NIC.
+
+The above two VMs need to have vmware-tools installed and synchronize time with host. (By select "Synchronize guest time with host" in VMware Tools option of VM settings in VI client.)
+
+## Detailed Install Instructions for serengeti node template:
+
+yum install following packages (Config proxy in yum.conf if behind a proxy)
    
-<code>
-  yum install -y openssh-server openssh-clients make gcc openssl-devel autoconf.noarch  bind-utils libxml2-python ncurses openssl sudo wget which gettext
-</code>
+    yum install -y openssh-server openssh-clients make gcc openssl-devel autoconf.noarch  bind-utils libxml2-python ncurses openssl sudo wget which gettext
 
-- reduce grub boot waiting time
+reduce grub boot waiting time
     
-<code>
-  sed -i 's|^timeout=.*$|timeout=0|' /boot/grub/grub.conf
-</code>
+    sed -i 's|^timeout=.*$|timeout=0|' /boot/grub/grub.conf
 
-- add write permission to /tmp directory
+add write permission to /tmp directory
 
-<code>
-  chmod a+w /tmp
-</code>
+    chmod a+w /tmp
+  
+install ruby 1.9.2 (export http_proxy if behind a proxy)
 
-- install ruby 1.9.2 (export http_proxy if behind a proxy)
-
-<code>
-  cd /tmp
-  wget http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p290.tar.gz
-  tar zxvf ruby-1.9.2-p290.tar.gz && cd ruby-1.9.2-p290
-  ./configure --prefix=/usr --disable-install-rdoc && make && make install
-  rm -rf /tmp/ruby*
-  cd /
-</code>
+    cd /tmp
+    wget http://ftp.ruby-lang.org/pub/ruby/1.9/ruby-1.9.2-p290.tar.gz
+    tar zxvf ruby-1.9.2-p290.tar.gz && cd ruby-1.9.2-p290
+    ./configure --prefix=/usr --disable-install-rdoc && make && make install
+    rm -rf /tmp/ruby*
+    cd /
 
   - install chef client and ruby shadow and dependencies
     
