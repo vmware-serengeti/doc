@@ -8,14 +8,14 @@ The detailed install instructions below walk you through the install process for
 
 # Prerequisite
 
-  - vSphere 5.0 with all esx servers time synchronized by NTP or so.
-  - A serengeti server VM with CentOS 5.x 64bit image, it's better to have 4GB or more memory and 4GB or more free disk space on root partition.
-  - A serrengeti node template VM with CentOS 5.x 64bit image, there is no requirement on memory as far as the OS can be installed, and with 1GB or more free disk to install some packages. The VM must have only one disk and one virtual NIC.
-  - The above two VMs need to have vmware-tools installed and synchronize time with host. (By select "Synchronize guest time with host" in VMware Tools option of VM settings in VI client.)
+- vSphere 5.0 with all esx servers time synchronized by NTP or so.
+- A serengeti server VM with CentOS 5.x 64bit image, it is better to have 4GB or more memory and 4GB or more free disk space on root partition.
+- A serrengeti node template VM with CentOS 5.x 64bit image, there is no requirement on memory as far as the OS can be installed, and with 1GB or more free disk to install some packages. The VM must have only one disk and one virtual NIC.
+- The above two VMs need to have vmware-tools installed and synchronize time with host. (By select "Synchronize guest time with host" in VMware Tools option of VM settings in VI client.)
 
 # Detailed Install Instructions for serengeti node template:
 
-  - yum install following packages (Config proxy in yum.conf if behind a proxy)
+- yum install following packages (Config proxy in yum.conf if behind a proxy)
     
     yum install -y openssh-server openssh-clients make gcc openssl-devel autoconf.noarch  bind-utils libxml2-python ncurses openssl sudo wget which gettext
 
