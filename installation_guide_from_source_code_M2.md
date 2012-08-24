@@ -16,9 +16,10 @@ The detailed install instructions below walk you through the install process for
 # Detailed Install Instructions for serengeti node template:
 
 - yum install following packages (Config proxy in yum.conf if behind a proxy)
-    
+   
+  <code>
     yum install -y openssh-server openssh-clients make gcc openssl-devel autoconf.noarch  bind-utils libxml2-python ncurses openssl sudo wget which gettext
-
+  /code>
   - reduce grub boot waiting time
     
     sed -i 's|^timeout=.*$|timeout=0|' /boot/grub/grub.conf
