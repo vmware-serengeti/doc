@@ -245,3 +245,14 @@ Useful links:
 https://cwiki.apache.org/confluence/display/PIG/Index%3bjsessionid=F1A021E3B0499C050216372F1926CD6B
 
 http://docs.1h.com/Hive_Troubleshooting
+
+## No disk space left on Serengeti Server
+This issue is described on [SERENGETI-531](https://issuetracker.springsource.com/browse/SERENGETI-531). Solution:
+* Reboot and login to Serengeti Server with user serengeti
+* # clean up Serengeti logs and temp files
+* $ rm -rf /opt/serengeti/logs/task/* /opt/serengeti/logs/*.log /opt/serengeti/tomcat6/logs/*.log
+* # compact couchdb file used by Chef Server
+* $ curl -H "Content-Type: application/json" -X POST http://localhost:5984/chef/_compact
+* There should be more disk space on Serengeti Server now. Let's restart Serengeti services:
+* $ serengeti-stop-services.sh; serengeti-start-services.sh
+
