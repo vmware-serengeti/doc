@@ -10,15 +10,17 @@ The detailed install instructions below walk you through the install process for
 
 vSphere 5.0 with all esx servers time synchronized by NTP or so.
 
-A serengeti server VM with CentOS 5.x 64bit image, it is better to have 4GB or more memory and 4GB or more free disk space on root partition.
+A Serengeti Server VM with CentOS 5.6+ 64bit image. It is better to have 4GB or more memory and 4GB or more free disk space on root partition.
 
-A serrengeti node template VM with CentOS 5.x 64bit image, there is no requirement on memory as far as the OS can be installed, and with 1GB or more free disk to install some packages. The VM must have only one disk and one virtual NIC.
+A Serengeti Node Template VM with CentOS 5.x 64bit image. There is no requirement on memory as long as the OS can be installed, and with 1GB or more free disk to install some packages. The VM must have only one disk and one virtual NIC.
 
-The above two VMs need to have vmware-tools installed and synchronize time with host. (By select "Synchronize guest time with host" in VMware Tools option of VM settings in VI client.)
+The above two VMs need to have VMware Tools installed and synchronize time with host(by selecting "Synchronize guest time with host" in VMware Tools option of VM settings in vSphere Client).
 
-## Detailed Install Instructions for serengeti node template:
+## Instruction for Creating Serengeti Node Template
 
-yum install following packages (Config proxy in yum.conf if behind a proxy)
+Note: you can also use other OS which uses yum to manage packages (e.g. RHEL 5.6+ 64bit, Fedora) to create the Serengeti Node Template VM. We only test CentOS 5.6+ by far. There might be some difference when choosing RHEL or Fedora. If you came across problems, please post questions on our mailing list (https://groups.google.com/forum/#!forum/serengeti-user). 
+
+yum install following packages (config proxy in yum.conf if behind a proxy)
    
     yum install -y openssh-server openssh-clients make gcc openssl-devel autoconf.noarch  bind-utils libxml2-python ncurses openssl sudo wget which gettext
 
@@ -39,7 +41,7 @@ install ruby 1.9.2 (export http_proxy if behind a proxy)
     rm -rf /tmp/ruby*
     cd /
 
-install chef client and ruby shadow and dependencies
+install chef and its dependencies
     
     gem install bunny -v 0.7.9 --ignore-dependencies
     gem install chef -v 0.10.8 --ignore-dependencies
@@ -74,19 +76,19 @@ add seregenti user and make it as sudoer without password
     passwd serengeti
     echo "serengeti   ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 
-install sun JRE, you should upload to this VM as it cannot be downloaded directly, upload jre-6u31-linux-x64-rpm.bin to /root
-  
+install Sun JRE 1.6 or JDK 1.6
+ 
+    # please upload the JRE/JDK installation package to /root on the VM 
     cd /root
     bash jre-6u31-linux-x64-rpm.bin
     rm -rf jre*
-    export JAVA_HOME
     echo "JAVA_HOME=/usr/java/jre1.6.0_31" >> /etc/environment
     echo "PATH=$PATH:/usr/java/jre1.6.0_31/bin" >> /etc/profile
 
 add agent scripts
   
     mkdir -p /opt/vmware/sbin
-    copy distribute/agent/* under serengeti_ws github repo to /opt/vmware/sbin, then
+    copy distribute/agent/* under serengeti-ws github repo to /opt/vmware/sbin, then
     echo "python /opt/vmware/sbin/setup-ip.py" >> /etc/rc.local
     echo "bash /opt/vmware/sbin/mount_swap_disk.sh" >> /etc/rc.local
 
@@ -99,13 +101,13 @@ stop firewall
     service iptables stop
     chkconfig iptables off
 
-set selinux to disabled in /etc/selinux/config
+disable selinux in /etc/selinux/config
+
     sed -i 's|SELINUX=enforcing|SELINUX=disabled|' /etc/selinux/config
 
-shutdown VM
+shutdown VM and config Serengeti Server to use this VM as the Serengeti Node Template.
 
-
-## Detailed Install Instructions for serengeti server:
+## Instruction for Creating Serengeti Server:
 
 yum install following packages (Config proxy in yum.conf if behind a proxy)
 
