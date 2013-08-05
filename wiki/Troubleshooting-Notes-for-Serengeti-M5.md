@@ -1,4 +1,4 @@
-# Serengeti Troubleshooting Guide
+# Serengeti Troubleshooting Notes
 The Serengeti CLI reports invalid parameters and unsupported cluster specifications. 
 
 The Serengeti Web service layer stores the user input in a meta-database, which is PostgreSQL. The user input is verified in the Web service layer again, to make sure the user input is consistent at the system level. When an error occurs, users can check the Serengeti Web Service log in the /opt/serengeti/logs/serengeti.properties file.
