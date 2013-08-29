@@ -6,6 +6,10 @@ The Serengeti Web service layer stores the user input in a meta-database, which 
 The Serengeti provision engine validates vSphere resources, places virtual machine at vSphere, and leverages Chef to configure Hadoop cluster.  
 
 Because the cluster provisioning and configuration takes some time to finish, Serengeti launches a backend process for each task. Users can check the progress or find error information at /opt/serengeti/logs/task/<task id>/stderr.log and /opt/serengeti/logs/task/<task id>/stdout.log.
+
+##  Related Documentation
+See the VMware vSphere Big Data Extensions Administrator's and User's Guide for additional troubleshooting tips and solutions.
+
 ##  CLI setup error for NoClassDefFoundError
 After download remote CLI and unzip the file, user should not change the file structure, since serengeti-cli-0.6.0.jar file defined dependency for jars in cli/lib.
 
