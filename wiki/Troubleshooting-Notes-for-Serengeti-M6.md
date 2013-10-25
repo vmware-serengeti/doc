@@ -1,21 +1,21 @@
 # Serengeti Troubleshooting Notes
 The Serengeti CLI reports invalid parameters and unsupported cluster specifications. 
 
-The Serengeti Web service layer stores the user input in a meta-database, which is PostgreSQL. The user input is verified in the Web service layer again, to make sure the user input is consistent at the system level. When an error occurs, users can check the Serengeti Web Service log in the /opt/serengeti/logs/serengeti.properties file.
+The Serengeti Web service layer stores the user input in a meta-database, which is PostgreSQL. The user input is verified in the Web service layer again, to make sure the user input is consistent at the system level. When an error occurs, users can check the Serengeti Web Service log in the /opt/serengeti/logs/serengeti*.log file.
 
 The Serengeti provision engine validates vSphere resources, places virtual machine at vSphere, and leverages Chef to configure Hadoop cluster.  
 
-Because the cluster provisioning and configuration takes some time to finish, Serengeti launches a backend process for each task. Users can check the progress or find error information at /opt/serengeti/logs/task/<task id>/stderr.log and /opt/serengeti/logs/task/<task id>/stdout.log.
+Because the cluster provisioning and configuration takes some time to finish, Serengeti launches a backend process for each task. Users can check the progress or find error information at /opt/serengeti/logs/ironfan*.log
 
 ##  Related Documentation
 See the VMware vSphere Big Data Extensions Administrator's and User's Guide for additional troubleshooting tips and solutions.
 
 ##  CLI setup error for NoClassDefFoundError
-After download remote CLI and unzip the file, user should not change the file structure, since serengeti-cli-0.6.0.jar file defined dependency for jars in cli/lib.
+After download remote CLI and unzip the file, user should not change the file structure, since serengeti-*.jar file defined dependency for jars in cli/lib.
 
-If you find following error, please make sure the serengeti-cli-0.6.0.jar file is located in the unzip directory, and the "unzip dir"/lib contains the original jar files.
+If you find following error, please make sure the serengeti-cli-*.jar file is located in the unzip directory, and the "unzip dir"/lib contains the original jar files.
 
-    [serengeti@10 ~]$ java -jar serengeti-cli-0.6.0.jar
+    [serengeti@10 ~]$ java -jar serengeti-cli-*.jar
     Exception in thread "main" java.lang.NoClassDefFoundError: org/springframework/shell/Bootstrap
     Caused by: java.lang.ClassNotFoundException: org.springframework.shell.Bootstrap
             at java.net.URLClassLoader$1.run(URLClassLoader.java:202)
@@ -37,9 +37,9 @@ If user chooses to continue, Serengeti will finish the Hadoop creation process.
 ##  Where to find CLI logs
 At current CLI execution directory, you can find file cli-debug.log, which is the CLI log file.
 ##  Where to find Serengeti server logs
-Serengeti administrator can check server logs at Serengeti server VM. The log file /opt/serengeti/logs/serengeti.log contains Web Service component logs. 
+Serengeti administrator can check server logs at Serengeti server VM. The log file /opt/serengeti/logs/serengeti*.log contains Web Service component logs. 
 
-For each long run task, Serengeti starts one backend task. The task log files are located in /opt/serengeti/logs/task/<task id> directory. The task id can be found in /opt/serengeti/logs/serengeti.log file.
+For each long run task, Serengeti starts one backend task. The task log files are located in /opt/serengeti/logs/ironfan*.log.
 
 If the cluster task failed, the error message also shows where to find the backend task log.
 ##  Where to find Serengeti deployment logs
@@ -78,22 +78,6 @@ One reason for this issue is the skewed clocks. You may check the time setting a
 To fix this issue, you need to correct the clock with ntp update, i.e. all ESXi hosts sync to the same NTP server. So far, the provisioned VM will sync to their ESXi hosts automatically.
 
 After the clock is corrected, you may run cluster create resume to finish the cluster provision.
-##  Cluster creation failed for Network adapter 1 not found
-In task error message, user may find following error message:
-
-    error_code=>-1,
-     :error_msg=>
-      "Reconfigure network vmwgdata-worker-0 failed. network adapter:Network adapter 1 not found.",
-      
-Serengeti does not support globalization so far. This error probably is because your VC runs in a non-US locale. Then the network adapter name may be translated to some other language, for example Chinese “网络适配器 1”. 
-
-To check this, you need to browse https://<your_vc_ip>/mob/?moid=<your_vm_moid>&doPath=config.hardware.device[4000].deviceInfo, and check if the label is "Network adapter 1".
-
-The above <your_vm_moid> is the mob id of Serengeti template VM, which can be found at Serengeti Server configuration file, /opt/serengeti/conf/serengeti.properties. The value of property “template_id” is the vm mob id.
-
-If the label is not “Network adapter  1”, you need to change the VC locale to get a English value. 
-
-Another way is to hack the server code at file /usr/lib/ruby/gems/1.9.1/gems/cloud-manager-0.5.0/lib/cloud_manager/client_fog.rb, change “Network adapter  1” to the listed value in the above URL.
 ##  Cluster creation failed for resource pool, datastore, or network is not added.
 Add a vSphere resource pool, datastore, or network into the Serengeti system before you create a cluster.
 ![(attachements/image003.jpg)](https://github.com/vmware-serengeti/doc/raw/master/wiki/attachements/image003.jpg)
@@ -106,7 +90,7 @@ Serengeti supports an advanced feature that customizes cluster definition with "
   - Roles in each node group should not be empty.
   -	Supported Hadoop roles can be listed using "distro list" command. Unsupported Hadoop roles should not appear in the cluster spec file.
   -	Users do not have to write all the required roles for one Hadoop cluster. The required roles will added into the cluster spec with default configuration.
-  -	The hadoop_namenode and hadoop_jobtracker are master roles, which must be in one node group. The total instance number must be 1 and only 1.
+  -	The hadoop_namenode and hadoop_jobtracker are master roles. The total instance number must be 1 and only 1 for the distros based on hadoop 1.x.
   -	Node group instance numbers must not be negative numbers.
 
 The CLI displays the following error message, when these rules are not followed
@@ -122,7 +106,7 @@ Serengeti has a default cluster spec, with three node groups.
 
 If you change the default value, through the command line or if you customize cluster spec file, you can export the cluster spec to verify if you get a cluster as your expectation.
 ##  The JSON file located at Serengeti Server conf directory is not sample spec
-The file /opt/serengeti/conf/ template-cluster-spec.json at Serengeti server VM is not a sample spec file. User should not use this file as a specification file to create your own cluster. 
+The file /opt/serengeti/conf/template-cluster-spec.json at Serengeti server VM is not a sample spec file. User should not use this file as a specification file to create your own cluster. 
 
 User should find the sample specification at downloaded Serengeti CLI package.
 ##  Cluster creation/resume/resize failed before 50% progress, and show error message "Can not alloc resource for vm."
@@ -130,48 +114,22 @@ The operation might have failed because the system is out of resources or becaus
 
 Use vSphere Client to verify that all virtual machines that you created have Hadoop installed.
 
-In the task log file /opt/senrengeti/logs/task/<task id>/stdout.log, you can find following error message: 
-    "Can not alloc resource for vm. Reason: ...", Any of the following reasons might cause the error, 
-      -  <host_name> haven't enough memory for <vm_name>...
-      -	Can not find suitable sys datastore in host <host_name>...
-      -	No enough disk spaces for <vm_name>'s swap ...
-      -	No enough disk spaces for <vm_name>'s data ...
-      -	Virtual machine can not get resources in rp <rp_name>...
-The following example shows an error log.
-
-![(attachements/image006.jpg)](https://github.com/vmware-serengeti/doc/raw/master/wiki/attachements/image006.jpg)
-
-The failure in this example happened because the Serengeti provision engine cannot find the resource to place virtual machine. For such failure, you can expand the resource or release resources from other workloads in vSphere, and then resume the cluster creation.
-
-You might receive this error message for any configuration problem. At the present time, it is not possible to release vSphere system resources by using Serengeti, so you must either rename the resources through the vSphere Client, or delete the problem resources through Serengeti.
+At the present time, it is not possible to release vSphere system resources by using Serengeti, so you must either rename the resources through the vSphere Client, or delete the problem resources through Serengeti.
 ##  Virtual machine cannot get ip address.
-In the log file /opt/senrengeti/logs/task/<task id>/stdout.log, if the failed virtual machine cannot get IP address, the reason might be a network configuration error.
+In the log file /opt/senrengeti/logs/serengeti.log, if the failed virtual machine cannot get IP address, the reason might be a network configuration error.
 -  Verify that the vSphere port group still has enough port for new virtual machine.
 -	If the network is using static IP address check that the IP address range is not duplicated with other virtual machine.
 -	If the network is using DHCP, check that the DHCP still has an IP address to allocate for the new virtual machine. 
 -	After you have corrected the error, resume the cluster creation or rerun the previous command if it's not cluster creation.
-##  Fetch info error
-The log file /opt/senrengeti/logs/task/<task id>/stdout.log might return an error such as "Fetch info from vSphere: Fetch vSphere info failed. Reason: ...” 
-
-In this case the vCenter Server or the vCenter connection might be broken. After vCenter Server or the network is recovered, you can resume the cluster creation or rerun the previous command.
 ##  vCenter Server connection failure
 If the CLI shows an error message such as "VC login error massages: vSphere login failed. Reason: 5 connections fail to login.". Please check the vCenter Server status or network to make sure vCenter Server is reachable.
 
-If you start up the Serengeti server from source code, you must check the VC configuration at serengeti.properties to make sure vCenter Server address and login account are correct.
-
-The following example shows output during cluster creation when vCenter Server connection fails.
-
-![(attachements/image007.png)](https://github.com/vmware-serengeti/doc/raw/master/wiki/attachements/image007.png)
 ##  How to change the log level at Serengeti
 The Serengeti system uses log4j to log out debug or error messages. You can change the /opt/serengeti/conf/log4j.properties file to customize the log level. The backend task will also consumes this log level.
 ##  Cluster task failed after 50%, with distro downloading failure
 If cluster creation fails with bootstrap failure and for the failed virtual machine, the downloading distro failed. The probably reason is that the distro server is down. 
 
-The following example shows the output of cluster creation when there is a problem with the distro server.
-
-![(attachements/image008.jpg)](https://github.com/vmware-serengeti/doc/raw/master/wiki/attachements/image008.jpg)
-
-You can view error messages at /opt/Serengeti/logs/task/19/stdout.log. For example:
+You can view error messages at /opt/Serengeti/logs/ironfan.log. For example:
 
 ![(attachements/image009.jpg)](https://github.com/vmware-serengeti/doc/raw/master/wiki/attachements/image009.jpg)
 
@@ -181,29 +139,15 @@ NOTE: make sure the script is running correctly. If any process is not stopped s
 ##  Cluster task failed after 50%, with failed to startup Hadoop service.
 If a cluster fails with a bootstrap failure and for failed virtual machine, the Hadoop service has not started. The error probably is because user defined too small virtual machine box. The CPU or memory is not enough to startup the service. Check your cluster spec file.
 
-There is no command to resize the virtual machine CPU/memory directly. For this error, you must delete the current cluster and recreate the cluster with a larger CPU/memory configuration.
+In this case, you can resize the cluster with a larger CPU/memory configuration.
 ##  Cluster task failure after 50%, with bootstrap failure.
 If the reason for the virtual machine bootstrap failure is unclear, the Chef server might be down, because Serengeti uses Chef to bootstrap the cluster.
 
 For this type of error, reset the Serengeti services through serengeti-stop-services.sh and serengeti-start-services.sh and then resume the cluster creation process.
-##	Cluster status is inconsistent between Serengeti Web Service layer and provision engine.
-Cluster provision or other command fails at progress 0%, but the log /opt/senrengeti/logs/task/<task id>/stdout.log shows that the task is finished. 
-
-Serengeti is using rabbitmq for communication between the Web Service layer and the provision engine. If the status is inconsistent, you must reset Serengeti services through serengeti-stop-services.sh and serengeti-start-services.sh, and then resume cluster creation process or rerun the previous cluster creation.
 ##	When should you use cluster resume.
 If cluster creation fails and you fix the error, you can run the "cluster create --name <name> --resume" command to resume the cluster creation. 
 
 But if Serengeti contains some wrong resource information for vCenter Server, the better solution is to remove the cluster, and recreate vSphere resources, recreate cluster. 
-##	Why a cluster cannot be deleted.
-If the Serengeti system environment is not setup correctly, the log /opt/serengeti/logs/serengeti.log might show that cluster creation failed because ironfan_proxy.sh is not found. 
-
-This failure might be due to either of two reasons:
--	You started Serengeti Web Service through tomcat command directly, so the Serengeti environment is not set up dynamically. 
--	You configured the Serengeti services manually from source code, and some environments are not setup correctly. 
-
-Startup or reset Serengeti services by running serengeti-stop-services.sh and serengeti-start-services.sh scripts or setup Serengeti by according to instructions in the user manual.
-
-A known issue is that Serengeti still cannot delete the cluster that fails for the above reason even after the system is recovered. To remove the left over information from meta-db, you can login to postgres database using command "psql -U serengeti", and run sql "delete from cluster where id=<cluster id>;". The cluster id can be queried out from the table "cluster".
 ##	Hadoop TESTDFSIO failed for IOException.
 For example, there might be an error when running command:
 
@@ -260,100 +204,5 @@ This issue is described on [SERENGETI-531](https://issuetracker.springsource.com
 * There should be more disk space on Serengeti Server now. Let's restart Serengeti services:
 * $ serengeti-stop-services.sh; serengeti-start-services.sh
 
-##      Cluster limit/unlimit end up with FAILED 100% 
-After successful creation of cluster, when you are trying to "limit" or "unlimit" cluster , it ends up with status "FAILED 100%".
-Following output is a sample.
-       
-limit command line
-    
-    serengeti>cluster limit --name custom_apache --activeComputeNodeNum 6
-    RUNNING 0%
-    RUNNING 40%
-    RUNNING 60%
-    verifying active task trackers
-    FAILED 100%
-    
-    cluster custom_apache limit failed: Unknown exit status during decommission; however, powering on/off VMs succeeded;
-
-limit VHM log
-    
-    2013 Feb 15 23:49:53.136 [10-EmbeddedVHM] Processing message...
-    2013 Feb 15 23:49:53.137 [10-EmbeddedVHM] Progress percent = 10% msg=
-    2013 Feb 15 23:49:53.138 [10-EmbeddedVHM] Getting cluster inventory information...
-    2013 Feb 15 23:49:53.331 [10-EmbeddedVHM] Finding TT states for compute
-    2013 Feb 15 23:49:53.364 [10-EmbeddedVHM] Total TT VMs = 8, total powered-on TT VMs = 8, target powered-on TT VMs = 6
-    2013 Feb 15 23:49:53.365 [10-EmbeddedVHM] Progress percent = 30% msg=
-    2013 Feb 15 23:49:53.366 [10-EmbeddedVHM] Target TT VMs to enable/disable = -2
-    2013 Feb 15 23:49:53.367 [10-EmbeddedVHM] Progress percent = 40% msg=
-    2013 Feb 15 23:49:53.367 [10-HadoopAdaptor] TTs length: 2
-    2013 Feb 15 23:49:53.367 [10-HadoopConnection] Copying data to remote file /tmp/dlist.txt on jobtracker
-    2013 Feb 15 23:49:56.370 [10-HadoopConnection] Could not create ssh channel (e.g., wrong ip addr/username/password/prvkey) on host 10.111.88.86
-    2013 Feb 15 23:49:56.371 [10-HadoopAdaptor] Unknown exit status during decommission;
-    2013 Feb 15 23:49:56.372 [10-AbstractEDP] Progress percent = 60% msg=verifying active task trackers
-    2013 Feb 15 23:49:56.373 [10-AbstractEDP] Disabling VM custom_apache-compute-6 ...
-    2013 Feb 15 23:49:56.419 [10-AbstractEDP] Disabling VM custom_apache-compute-4 ...
-    2013 Feb 15 23:49:56.481 [10-AbstractEDP] Waiting for completion...
-    2013 Feb 15 23:50:01.793 [10-AbstractEDP] Done
-    2013 Feb 15 23:50:01.794 [10-EmbeddedVHM] Progress percent = 90% msg=
-    2013 Feb 15 23:50:01.795 [10-EmbeddedVHM] TaskStatus: interpretErrorCode Unknown exit status during decommission; FAILED
-    2013 Feb 15 23:50:01.795 [10-EmbeddedVHM] TaskStatus: blockOnVMTaskCompletion null SUCCEEDED
-    2013 Feb 15 23:50:01.795 [10-EmbeddedVHM] TaskStatus: blockOnVMTaskCompletion null SUCCEEDED
-    2013 Feb 15 23:50:01.796 [10-EmbeddedVHM] TaskStatus: testForPowerState null SUCCEEDED
-    2013 Feb 15 23:50:01.796 [10-EmbeddedVHM] TaskStatus: testForPowerState null SUCCEEDED
-    2013 Feb 15 23:50:01.797 [10-EmbeddedVHM] Waiting for message
-
-unlimit command line
-            
-    serengeti>cluster unlimit --name custom_apache --startComputeNodes
-    RUNNING 0%
-    RUNNING 40%
-    RUNNING 50%
-    FAILED 100%
-    
-    cluster custom_apache unlimit failed: Unknown exit status during recommission; however, powering on/off VMs succeeded
-
-unlimit VHM log
-            
-    2013 Feb 15 23:52:33.741 [10-EmbeddedVHM] Processing message...
-    2013 Feb 15 23:52:33.742 [10-EmbeddedVHM] Progress percent = 10% msg=
-    2013 Feb 15 23:52:33.743 [10-EmbeddedVHM] Getting cluster inventory information...
-    2013 Feb 15 23:52:33.938 [10-EmbeddedVHM] Finding TT states for compute
-    2013 Feb 15 23:52:33.970 [10-EmbeddedVHM] Request to unlimit TT VMs
-    2013 Feb 15 23:52:33.971 [10-EmbeddedVHM] Total TT VMs = 8, total powered-on TT VMs = 6, target powered-on TT VMs = 8
-    2013 Feb 15 23:52:33.972 [10-EmbeddedVHM] Progress percent = 30% msg=
-    2013 Feb 15 23:52:33.973 [10-EmbeddedVHM] Progress percent = 40% msg=
-    2013 Feb 15 23:52:33.973 [10-HadoopAdaptor] TTs length: 8
-    2013 Feb 15 23:52:33.973 [10-HadoopConnection] Copying data to remote file /tmp/rlist.txt on jobtracker
-    2013 Feb 15 23:52:36.978 [10-HadoopConnection] Could not create ssh channel (e.g., wrong ip addr/username/password/prvkey) on host 10.111.88.86
-    2013 Feb 15 23:52:36.979 [10-HadoopAdaptor] Unknown exit status during recommission;
-    2013 Feb 15 23:52:36.980 [10-AbstractEDP] Progress percent = 50% msg=
-    2013 Feb 15 23:52:36.980 [10-AbstractEDP] Enabling VM custom_apache-compute-0 ...
-    2013 Feb 15 23:52:36.981 [10-AbstractEDP] Enabling VM custom_apache-compute-3 ...
-    2013 Feb 15 23:52:36.981 [10-AbstractEDP] Enabling VM custom_apache-compute-6 ...
-    2013 Feb 15 23:52:37.6 [10-AbstractEDP] Enabling VM custom_apache-compute-2 ...
-    2013 Feb 15 23:52:37.6 [10-AbstractEDP] Enabling VM custom_apache-compute-5 ...
-    2013 Feb 15 23:52:37.7 [10-AbstractEDP] Enabling VM custom_apache-compute-7 ...
-    2013 Feb 15 23:52:37.7 [10-AbstractEDP] Enabling VM custom_apache-compute-1 ...
-    2013 Feb 15 23:52:37.8 [10-AbstractEDP] Enabling VM custom_apache-compute-4 ...
-    2013 Feb 15 23:52:37.119 [10-AbstractEDP] Waiting for completion...
-    2013 Feb 15 23:52:41.126 [10-AbstractEDP] Done
-    2013 Feb 15 23:52:41.127 [10-AbstractEDP] Progress percent = 60% msg=verifying active task trackers
-    2013 Feb 15 23:52:41.128 [10-EmbeddedVHM] Progress percent = 90% msg=
-    2013 Feb 15 23:52:41.128 [10-EmbeddedVHM] TaskStatus: interpretErrorCode Unknown exit status during recommission; FAILED
-    2013 Feb 15 23:52:41.128 [10-EmbeddedVHM] TaskStatus: blockOnVMTaskCompletion null SUCCEEDED
-    2013 Feb 15 23:52:41.129 [10-EmbeddedVHM] TaskStatus: blockOnVMTaskCompletion null SUCCEEDED
-    2013 Feb 15 23:52:41.129 [10-EmbeddedVHM] TaskStatus: testForPowerState null SUCCEEDED
-    2013 Feb 15 23:52:41.129 [10-EmbeddedVHM] TaskStatus: testForPowerState null SUCCEEDED
-    2013 Feb 15 23:52:41.130 [10-EmbeddedVHM] TaskStatus: testForPowerState null SUCCEEDED
-    2013 Feb 15 23:52:41.130 [10-EmbeddedVHM] TaskStatus: testForPowerState null SUCCEEDED
-    2013 Feb 15 23:52:41.131 [10-EmbeddedVHM] TaskStatus: testForPowerState null SUCCEEDED
-    2013 Feb 15 23:52:41.131 [10-EmbeddedVHM] TaskStatus: testForPowerState null SUCCEEDED
-    2013 Feb 15 23:52:41.131 [10-EmbeddedVHM] TaskStatus: testForPowerState null SUCCEEDED
-    2013 Feb 15 23:52:41.132 [10-EmbeddedVHM] TaskStatus: testForPowerState null SUCCEEDED
-    2013 Feb 15 23:52:41.133 [10-EmbeddedVHM] Waiting for message
-
-The reason is job tracker's ip changes after cluster creation. Serengeti metadata db still keeps the old ip.A workaround in M5 is to run "cluster list --name clusterName --detail" which will updte all vm information of Serengeti metadata from VC.
-##      IP will change unexpectedly if the IP allocation by DHCP on serengeti
+## IP will change unexpectedly if the IP allocation by DHCP on serengeti
 Restart serengeti server, update yum repo file and manifest file related to ip of web server.
-
-
